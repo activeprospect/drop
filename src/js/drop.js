@@ -185,7 +185,9 @@ function createContext(options={}) {
       if (typeof this.options.content === 'function') {
         const generateAndSetContent = () => {
           // content function might return a string or an element
-          const contentElementOrHTML = this.options.content.call(this, this);
+          let contentElementOrHTML = this.options.content.call(this, this);
+          if (typeof contentElementOrHTML === 'undefined') contentElementOrHTML = '';
+
 
           if (typeof contentElementOrHTML === 'string') {
             this.content.innerHTML = contentElementOrHTML;
@@ -203,7 +205,8 @@ function createContext(options={}) {
       } else if (typeof this.options.content === 'object') {
         this.content.appendChild(this.options.content);
       } else {
-        this.content.innerHTML = this.options.content;
+        let content = typeof this.options.content === 'undefined' ? '' : this.options.content;
+        this.content.innerHTML = content;
       }
 
       this.drop.appendChild(this.content);
@@ -371,6 +374,10 @@ function createContext(options={}) {
         return;
       }
 
+      this.trigger('open');
+
+      if (!this.content.innerHTML) return;
+
       if (!this.drop.parentNode) {
         document.body.appendChild(this.drop);
       }
@@ -391,8 +398,6 @@ function createContext(options={}) {
       if (typeof this.tether !== 'undefined') {
         this.tether.position();
       }
-
-      this.trigger('open');
 
       drop.updateBodyClasses();
     }
@@ -494,3 +499,4 @@ const Drop = createContext();
 document.addEventListener('DOMContentLoaded', () => {
   Drop.updateBodyClasses();
 });
+
