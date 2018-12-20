@@ -399,7 +399,6 @@ function createContext(options={}) {
         this.tether.position();
       }
 
-
       drop.updateBodyClasses();
     }
 

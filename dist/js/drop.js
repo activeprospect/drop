@@ -1,4 +1,4 @@
-/*! tether-drop 1.4.1 */
+/*! tether-drop 1.4.2 */
 
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -233,6 +233,7 @@ function createContext() {
           var generateAndSetContent = function generateAndSetContent() {
             // content function might return a string or an element
             var contentElementOrHTML = _this.options.content.call(_this, _this);
+            if (typeof contentElementOrHTML === 'undefined') contentElementOrHTML = '';
 
             if (typeof contentElementOrHTML === 'string') {
               _this.content.innerHTML = contentElementOrHTML;
@@ -249,7 +250,8 @@ function createContext() {
         } else if (typeof this.options.content === 'object') {
           this.content.appendChild(this.options.content);
         } else {
-          this.content.innerHTML = this.options.content;
+          var content = typeof this.options.content === 'undefined' ? '' : this.options.content;
+          this.content.innerHTML = content;
         }
 
         this.drop.appendChild(this.content);
@@ -420,6 +422,10 @@ function createContext() {
           return;
         }
 
+        this.trigger('open');
+
+        if (!this.content.innerHTML) return;
+
         if (!this.drop.parentNode) {
           document.body.appendChild(this.drop);
         }
@@ -440,8 +446,6 @@ function createContext() {
         if (typeof this.tether !== 'undefined') {
           this.tether.position();
         }
-
-        this.trigger('open');
 
         drop.updateBodyClasses();
       }
