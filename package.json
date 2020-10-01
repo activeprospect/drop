@@ -20,7 +20,7 @@
   "main": "dist/js/drop.js",
   "devDependencies": {
     "del": "^1.1.1",
-    "eslint": "^1.7.3",
+    "eslint": "^7.10.0",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^2.3.1",
     "gulp-babel": "^5.1.0",
