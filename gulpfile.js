@@ -1,14 +1,11 @@
-var del         = require('del');
 var gulp        = require('gulp');
 var babel       = require('gulp-babel');
 var bump        = require('gulp-bump');
 var header      = require('gulp-header');
 var minify      = require('gulp-minify-css');
 var plumber     = require('gulp-plumber');
-var prefixer    = require('gulp-autoprefixer');
 var rename      = require('gulp-rename');
 var uglify      = require('gulp-uglify');
-var sass        = require('gulp-sass');
 var umd         = require('gulp-wrap-umd');
 
 // Variables
@@ -27,13 +24,13 @@ var umdOptions = {
   }]
 };
 
-
+// TODO: update to gulp 4 syntax (plain function) if we ever need this task again
 // Clean
 gulp.task('clean', function() {
   del.sync([distDir]);
 });
 
-
+// TODO: update to gulp 4 syntax (plain function) if we ever need this task again
 // Javascript
 gulp.task('js:dev', function() {
   gulp.src('./src/js/drop.js')
@@ -45,8 +42,8 @@ gulp.task('js:dev', function() {
     .pipe(gulp.dest(distDir + '/js'));
 });
 
-gulp.task('js', function() {
-  gulp.src('./src/js/drop.js')
+function js() {
+  return gulp.src('./src/js/drop.js')
     .pipe(babel())
     .pipe(umd(umdOptions))
     .pipe(header(banner))
@@ -58,17 +55,10 @@ gulp.task('js', function() {
     .pipe(uglify())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(distDir + '/js'));
-});
+};
 
-
-// CSS
-gulp.task('css', function() {
-  gulp.src('./src/css/**/*.sass')
-    .pipe(sass({
-      includePaths: ['./bower_components']
-    }))
-    .pipe(prefixer())
-
+function css() {
+  return gulp.src('./src/css/**/*.css')
     // Original
     .pipe(gulp.dest(distDir + '/css'))
 
@@ -76,7 +66,7 @@ gulp.task('css', function() {
     .pipe(minify())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(distDir + '/css'));
-});
+};
 
 
 // Version bump
@@ -91,15 +81,20 @@ for (var i = 0; i < VERSIONS.length; ++i){
   })(VERSIONS[i]);
 }
 
-
+// TODO: update to gulp 4 syntax (plain function) if we ever need this task again
 // Watch
-gulp.task('watch', ['js:dev', 'css'], function() {
-  gulp.watch('./src/js/**/*', ['js:dev']);
-  gulp.watch('./src/css/**/*', ['css']);
-});
+// gulp.task('watch', ['js:dev', 'css'], function() {
+//   gulp.watch('./src/js/**/*', ['js:dev']);
+//   gulp.watch('./src/css/**/*', ['css']);
+// });
 
+function build(cb) {
+  return gulp.parallel(js, css)(cb)
+}
 
-// Defaults
-gulp.task('build', ['js', 'css']);
-gulp.task('default', ['build']);
-
+module.exports = {
+  default: build,
+  build,
+  js,
+  css
+}
